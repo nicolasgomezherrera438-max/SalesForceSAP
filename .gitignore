@@ -1,0 +1,16 @@
+
+node_modules/
+.env
+npm-debug.log*
+.DS_Store
+coverage/
+.vercel/
+
+# Archivos de Excel y datos comerciales privados
+*.xlsx
+*.csv
+*importar_datos_comerciales.sql
+
+# Archivos de respaldo locales
+*.bak
+*.dump

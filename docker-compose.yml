@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: salesforce
+      POSTGRES_USER: salesapp
+      POSTGRES_PASSWORD: salesapp_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - salesforce_pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U salesapp -d salesforce"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      JWT_SECRET: local_dev_only_change_me_before_deployment_please
+      JWT_EXPIRES_IN: 8h
+      DATABASE_URL: postgres://salesapp:salesapp_dev_password@db:5432/salesforce
+      CORS_ORIGIN: "*"
+      SAP_MODE: disabled
+      SAP_BASE_URL: ""
+      SAP_COMPANY_DB: ""
+      SAP_USERNAME: ""
+      SAP_PASSWORD: ""
+      SAP_AUTH_TYPE: service-layer
+      SAP_TIMEOUT_MS: 15000
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["sh", "-c", "node src/scripts/seed.js && node src/server.js"]
+volumes:
+  salesforce_pgdata:
