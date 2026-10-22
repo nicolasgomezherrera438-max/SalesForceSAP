@@ -16,7 +16,7 @@ app.use(cors({ origin: config.corsOrigin === '*' ? '*' : config.corsOrigin.split
 app.use(express.json({ limit: '2mb' }));
 app.use(morgan('tiny'));
 
-app.use(express.static(path.join(__dirname, '..', 'frontend', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 app.get('/api', (_req, res) => res.json({ name: 'SalesForceSAP Backend', version: '1.0.0', status: 'running', health: '/api/health' }));
 app.get('/api/health', async (_req, res) => {
   try {
